@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Street View Controls</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <style type="text/css">
+      #map { height: 100%; }
+      html, body { height: 100%; margin: 0; padding: 0; }
+      a[href^="http://maps.google.com/maps"]{display:none !important}
+      a[href^="https://maps.google.com/maps"]{display:none !important}
+      .gmnoprint.gm-style-cc{ display: none; }
+      .gmnoprint.gm-bundled-control.gm-bundled-control-on-bottom{ display: none; }
+      a {display: none;}
+      * {cursor: none;}
+    </style>
+    <script>
+        const db = [
+            ["養老天命反転地", 136.5510209, 35.28228],
+            ["山梨県笛吹川フルーツ公園", 138.6637222, 35.7030355],
+            ["白糸の滝", 138.5876545, 35.3125556],
+            ["渋谷駅", 139.7013252, 35.6574278],
+            ["代々木八幡宮", 139.6888684, 35.6718379],
+            ["秋葉原", 139.7705032, 35.6985306],
+            ["スクランブル交差点", 139.7003413, 35.6595465],
+            ["江ノ島海岸", 139.480635, 35.307908],
+            ["上野恩賜公園", 139.7741306, 35.7157944],
+            ["新宿東南口", 139.7014966, 35.6895038],
+            ["金の時計広場", 136.8829114, 35.1708419]
+        ];
+
+        function initPano() {
+            let index = 0;
+            const panorama = new google.maps.StreetViewPanorama(
+            document.getElementById("map"),
+            {
+                position: { lat: db[index][2], lng: db[index][1] },
+                pov: {heading: 0, pitch: 0 },
+                zoom: 0,
+                fullscreenControl: true,
+                addressControl: false,
+                zoomControl: true,
+                motionTracking: false,
+                motionTrackingControl: false,
+                linksControl: false,
+                panControl: false,
+                enableCloseButton: false,
+                showRoadLabels: false,
+                scrollwheel: false,
+                disableDefaultUI: false,
+                clickToGo: false
+            }
+            );
+
+            let isControlShow = true;
+            document.onkeydown = keydown;
+            function keydown(event){
+                if(event.keyCode === 32){//space
+                    if(isControlShow){
+                        panorama.setOptions({fullscreenControl: false});
+                        isControlShow = false;
+                    }else{
+                        panorama.setOptions({fullscreenControl: true});
+                        isControlShow = true;
+                    }
+                }
+                if(event.keyCode === 90){//z
+                    index += 1;
+                    if(index >10){
+                        index = 0;
+                    }
+                    panorama.setOptions({position: { lat: db[index][2], lng: db[index][1] }});
+                    console.log(db[index][0]);
+                }
+                if(event.keyCode === 88){//x
+                    index -= 1;
+                    if(index < 0){
+                        index = 10;
+                    }
+                    panorama.setOptions({position: { lat: db[index][2], lng: db[index][1] }});
+                    console.log(db[index][0]);
+                }
+                if(event.keyCode === 65){//a
+                    let left = panorama.getPov().heading - 116 ;
+                    panorama.setOptions({pov: {heading: left, pitch: 0}});
+                    console.log(panorama.getPov());
+                }
+                if(event.keyCode === 83){//s
+                    let right = panorama.getPov().heading + 116 ;
+                    panorama.setOptions({pov: {heading: right, pitch: 0}});
+                    console.log(panorama.getPov());
+                }
+            }
+        }
+    </script>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initPano&libraries=&v=weekly" async></script>
+  </body>
+</html>
